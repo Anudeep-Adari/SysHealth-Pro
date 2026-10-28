@@ -30,30 +30,64 @@
 ## 📌 Architecture & Metric Ingestion Pipeline
 
 ```mermaid
-flowchart TD
-    subgraph Sensors ["🔌 Metric Collectors (collectors/)"]
-        CPU["CPU Frequency & Thermal Collector"]
-        RAM["RAM & Working-Set Pooler"]
-        Disk["Disk I/O & IOPS Collector"]
-        Net["Network Throughput & Socket Monitor"]
+flowchart TB
+    %% Styling & Spacing
+    classDef client fill:#161b22,stroke:#58a6ff,stroke-width:2px,color:#ffffff;
+    classDef zone fill:#0d1117,stroke:#30363d,stroke-width:1.5px,color:#c9d1d9;
+    classDef security fill:#161b22,stroke:#f85149,stroke-width:2px,color:#ffffff;
+    classDef data fill:#161b22,stroke:#3fb950,stroke-width:2px,color:#ffffff;
+
+    subgraph HostPlane [" 🖥️ HOST SYSTEM SENSOR & KERNEL PLANE "]
+        direction LR
+        WinOS["Windows Kernel (WMI / CIM)<br/><sub>PerfMon Counters & S.M.A.R.T.</sub>"]:::client
+        LinuxOS["Linux Kernel (procfs / sysfs)<br/><sub>cgroups & Socket States</sub>"]:::client
     end
 
-    subgraph CoreEngine ["⚙️ Core Telemetry Engine (core/)"]
-        Aggregator["Metric Aggregation & Sliding Window"]
-        Anomaly["Threshold & Anomaly Evaluator"]
-        Storage["Local In-Memory Circular Buffer"]
+    subgraph Region1 [" 🔌 REGION 1: MODULAR METRIC COLLECTOR POOL "]
+        direction TB
+        CPU["CPU Collector<br/>• Core Clock & Load Percent<br/>• Package Thermals & Throttle State"]:::client
+        RAM["RAM & Memory Pooler<br/>• Committed Virtual Memory<br/>• Active vs. Standby Cache"]:::client
+        Disk["Storage & I/O Sentry<br/>• Queue Depth & Read/Write IOPS<br/>• S.M.A.R.T. Health Attributes"]:::client
+        Net["Network Throughput Monitor<br/>• Socket Saturation & Bandwidth"]:::client
     end
 
-    subgraph Outbound ["📊 Presentation & Reporting (ui/)"]
-        Dashboard["PySide / CLI Telemetry Dashboard"]
-        Alerts["Event Warning & Telemetry Log Dispatcher"]
+    subgraph Region2 [" 🧠 REGION 2: REAL-TIME TELEMETRY ENGINE "]
+        direction TB
+        SlidingWindow["Sliding-Window Aggregator<br/>• High-Frequency Buffer (1000ms)<br/>• Exponential Decay Smoothing"]:::client
+        AnomalyDetector["Threshold & Anomaly Evaluator<br/>• Z-Score Statistical Deviation<br/>• Critical Thermal Breach Alerts"]:::security
+        RingBuffer["Circular In-Memory Cache<br/>• Zero-Garbage-Collection Ring Buffer"]:::data
     end
 
-    Sensors --> Aggregator
-    Aggregator --> Anomaly
-    Anomaly --> Storage
-    Storage --> Dashboard
-    Anomaly -.->|Threshold Breach| Alerts
+    subgraph CentralTransit [" ⚡ CENTRAL TRANSIT: TELEMETRY DISPATCH ROUTER "]
+        direction TB
+        Router["Event & Metric Message Bus<br/><sub>Decoupled Publisher / Subscriber Dispatcher</sub>"]:::client
+    end
+
+    subgraph OutboundPlane [" 📊 PRESENTATION & PERSISTENCE PLANE "]
+        direction LR
+        UI["PySide Fluent Dashboard<br/><sub>High-Frame-Rate UI Telemetry Gauges</sub>"]:::data
+        LogDispatch["Structured Telemetry Dispatch<br/><sub>JSON Event Log & Alert Webhooks</sub>"]:::data
+    end
+
+    %% Spacious Architectural Connections
+    WinOS -------------> CPU
+    WinOS -------------> RAM
+    LinuxOS -----------> Disk
+    LinuxOS -----------> Net
+
+    CPU ---------------> SlidingWindow
+    RAM ---------------> SlidingWindow
+    Disk --------------> SlidingWindow
+    Net ---------------> SlidingWindow
+
+    SlidingWindow ------> AnomalyDetector
+    SlidingWindow ------> RingBuffer
+
+    AnomalyDetector ----> Router
+    RingBuffer ---------> Router
+
+    Router -------------> UI
+    Router -------------> LogDispatch
 ```
 
 ---
