@@ -2,12 +2,11 @@
 
 # 🩺 SysHealth-Pro
 
-<p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=26&duration=3000&pause=1000&color=2EA043&center=true&vCenter=true&width=620&lines=Modular+Operating+System+Diagnostics;Hardware+Telemetry+%26+Metric+Collectors;Extensible+Plugin-Based+Sensor+Architecture;Cross-Platform+System+Health+Monitoring" alt="Typing SVG" />
-</p>
+### High-Frequency System Diagnostics & Extensible Hardware Metric Architecture
+**Python 3.11+ • Domain-Driven Collectors • Real-Time Sensor Telemetry • Cross-Platform (Windows & Linux)**
 
 <p align="center">
-  <strong>High-Frequency System Diagnostics, Hardware Metric Collection & Extensible Health Telemetry Architecture</strong>
+  <em>Modular, low-overhead system monitoring engine decoupling hardware sensors from sliding-window metric aggregation.</em>
 </p>
 
 <!-- Badges -->
@@ -107,3 +106,4 @@ Crafted with high engineering precision by **[Anudeep Adari](https://github.com/
 Continuous AI Code Reviews powered by **CodeRabbit**
 
 </div>
+
