@@ -3,14 +3,31 @@ name: SysHealth-Pro CI
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'assets/**'
+      - '.gitignore'
+      - '.coderabbit.yaml'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'assets/**'
+      - '.gitignore'
+      - '.coderabbit.yaml'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint-and-validate:
     name: Code Integrity & Syntax Check
     runs-on: ubuntu-latest
+    timeout-minutes: 4
 
     steps:
       - name: Checkout Repository
